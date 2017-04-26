@@ -99,4 +99,21 @@ public class PlayerHealth : MonoBehaviour
         playerMovement.enabled = false;
         playerShooting.enabled = false;
     }
+
+    public void healBuff(int health, GameObject obj)
+    {
+
+        if (currentHealth + health > startingHealth && currentHealth != 100)
+        {
+            Debug.Log("OVER start");
+            currentHealth = startingHealth;
+            Destroy(obj);
+        } else if (currentHealth < startingHealth )
+        {
+            Debug.Log("UNDER start");
+            currentHealth += health;
+            healthSlider.value = currentHealth;
+            Destroy(obj);
+        }
+    }
 }

@@ -5,6 +5,8 @@ public class PlayerShooter : MonoBehaviour
     public int damagePerShot = 20;                  // The damage inflicted by each bullet.
     public float timeBetweenBullets = 0.15f;        // The time between each shot.
     public float range = 100f;                      // The distance the gun can fire.
+    public int ammo;
+    public int startAmmo;
 
     float timer;                                    // A timer to determine when to fire.
     Ray shootRay;                                   // A ray from the gun end forwards.
@@ -24,7 +26,8 @@ public class PlayerShooter : MonoBehaviour
         obstacleMask = LayerMask.GetMask("Obstacle");
         gunParticles = GetComponent<ParticleSystem>();
         shotLine = GetComponent<LineRenderer>();
-       // shotSound = GetComponent<AudioSource>();
+        // shotSound = GetComponent<AudioSource>();
+        startAmmo = ammo;
 
     }
 
@@ -34,7 +37,7 @@ public class PlayerShooter : MonoBehaviour
         timer += Time.deltaTime;
 
         // If the Fire1 button is being press and it's time to fire...
-        if (Input.GetButton("Fire1") && timer >= timeBetweenBullets)
+        if (Input.GetButton("Fire1") && timer >= timeBetweenBullets && ammo != 0)
         {
             // ... shoot the gun.
             Shoot();
@@ -56,6 +59,8 @@ public class PlayerShooter : MonoBehaviour
 
     void Shoot()
     {
+        ammo -= 1;
+
         // Reset the timer.
         timer = 0f;
 
@@ -67,15 +72,21 @@ public class PlayerShooter : MonoBehaviour
 
 
         // Enable the line renderer and set it's first position to be the end of the gun.
-        shotLine.enabled = true;
-        shotLine.SetPosition(0, transform.position);
+        //shotLine.enabled = true;
+        //shotLine.SetPosition(0, transform.position);
 
         // Set the shootRay so that it starts at the end of the gun and points forward from the barrel.
         shootRay.origin = transform.position;
         shootRay.direction = transform.forward;
 
         // Perform the raycast against gameobjects on the shootable layer and if it hits something...
-        if (Physics.Raycast(shootRay, out shootHit, range, shootableMask))
+        if (Physics.Raycast(shootRay, out shootHit, range, obstacleMask))
+        {
+            // Set the second position of the line renderer to the point the raycast hit.
+            shotLine.SetPosition(1, shootHit.point);
+
+        }
+        else if (Physics.Raycast(shootRay, out shootHit, range, shootableMask))
         {
             // Try and find an EnemyHealth script on the gameobject hit.
             EnemyHealth enemyHealth = shootHit.collider.GetComponent<EnemyHealth>();
@@ -90,14 +101,20 @@ public class PlayerShooter : MonoBehaviour
 
             // Set the second position of the line renderer to the point the raycast hit.
             shotLine.SetPosition(1, shootHit.point);
-        } else if (Physics.Raycast(shootRay, out shootHit, range, obstacleMask))
-        {
-            // Set the second position of the line renderer to the point the raycast hit.
-            shotLine.SetPosition(1, shootHit.point);
-        } else
+        }  else
         {
             // ... set the second position of the line renderer to the fullest extent of the gun's range.
             shotLine.SetPosition(1, shootRay.origin + shootRay.direction * range);
         }
+    }
+
+    public int getAmmo()
+    {
+        return ammo;
+    }
+
+    public void resetAmmo()
+    {
+        ammo = startAmmo;
     }
 }

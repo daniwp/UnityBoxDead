@@ -68,6 +68,7 @@ public class EnemyHealth : MonoBehaviour
         {
             // The enemy is dead.
             isDead = true;
+            GetComponent<CapsuleCollider>().enabled = false;
             StartSinking();
             // Turn the collider into a trigger so shots can pass through it.
             capsuleCollider.isTrigger = true;
