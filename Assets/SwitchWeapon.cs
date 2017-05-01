@@ -24,12 +24,12 @@ public class SwitchWeapon : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.Q) && activeWeps.Count > 1)
+        if (Input.GetKeyDown(KeyCode.Q) && activeWeps.Count > 1 && !gun.transform.GetChild(4).GetComponent<PlayerShooter>().getReloading())
         {
             switchWep();
         }
 
-        if (semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getAmmo() < 1 && semiautogun.activeSelf)
+        if (semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getTotalAmmo() < 1 && semiautogun.activeSelf)
         {
             switchWep();
             activeWeps.Remove(semiautogun);
@@ -38,7 +38,10 @@ public class SwitchWeapon : MonoBehaviour {
 
         if (semiautogun.activeSelf)
         {
-            ammoText.text = "Ammo: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getAmmo();
+            ammoText.text = "Ammo: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getTotalAmmo() + " Mag: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
+        } else if(gun.activeSelf)
+        {
+            ammoText.text = "Ammo: Infinite" + " Mag: " + gun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
         }
     }
 
@@ -59,7 +62,7 @@ public class SwitchWeapon : MonoBehaviour {
         {
             gun.SetActive(false);
             semiautogun.SetActive(true);
-            ammoText.text = "Ammo: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getAmmo();
+            ammoText.text = "Ammo: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getTotalAmmo();
             gunImage.enabled = false;
             semiImage.enabled = true;
         } else
@@ -68,7 +71,7 @@ public class SwitchWeapon : MonoBehaviour {
             semiautogun.SetActive(false);
             gunImage.enabled = true;
             semiImage.enabled = false;
-            ammoText.text = "Ammo: Infinite";
+            ammoText.text = "Ammo: Infinite" + " Mag: " + gun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
         }
     }
 

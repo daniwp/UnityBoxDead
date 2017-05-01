@@ -1,13 +1,18 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class PlayerShooter : MonoBehaviour
 {
     public int damagePerShot = 20;                  // The damage inflicted by each bullet.
     public float timeBetweenBullets = 0.15f;        // The time between each shot.
     public float range = 100f;                      // The distance the gun can fire.
-    public int ammo;
+    public int totalAmmo;
     public int startAmmo;
+    public int clipSize;
+    public float reloadTime;
 
+    int currentClipAmount;
+    static bool reloading = false;
     float timer;                                    // A timer to determine when to fire.
     Ray shootRay;                                   // A ray from the gun end forwards.
     RaycastHit shootHit;                            // A raycast hit to get information about what was hit.
@@ -17,6 +22,11 @@ public class PlayerShooter : MonoBehaviour
     float effectsDisplayTime = 0.2f;                // The proportion of the timeBetweenBullets that the effects will display for.
     LineRenderer shotLine;
     int score = 0;
+    AudioSource[] sounds;
+    AudioSource noAmmoSound;
+    AudioSource shotSound;
+
+
 
 
     void Awake()
@@ -26,9 +36,17 @@ public class PlayerShooter : MonoBehaviour
         obstacleMask = LayerMask.GetMask("Obstacle");
         gunParticles = GetComponent<ParticleSystem>();
         shotLine = GetComponent<LineRenderer>();
-        // shotSound = GetComponent<AudioSource>();
-        startAmmo = ammo;
+        sounds = GetComponents<AudioSource>();
+        noAmmoSound = sounds[0];
+        shotSound = sounds[1];
+        currentClipAmount = clipSize;
+        startAmmo = totalAmmo;
+        totalAmmo -= clipSize;
+    }
 
+    void FixedUpdate()
+    {
+        Debug.Log(currentClipAmount);
     }
 
     void Update()
@@ -36,11 +54,34 @@ public class PlayerShooter : MonoBehaviour
         // Add the time since Update was last called to the timer.
         timer += Time.deltaTime;
 
+        if (Input.GetKeyDown(KeyCode.R) && totalAmmo != 0 && currentClipAmount != clipSize && !reloading)
+        {
+            if (totalAmmo >= clipSize || totalAmmo < 0 )
+            {
+                totalAmmo -= clipSize;
+                currentClipAmount = clipSize;
+            }
+            else if (totalAmmo < clipSize && totalAmmo > 0)
+            {
+                currentClipAmount = totalAmmo;
+                totalAmmo = 0;
+            }
+            StartCoroutine(reloadWait());
+        }
+
         // If the Fire1 button is being press and it's time to fire...
-        if (Input.GetButton("Fire1") && timer >= timeBetweenBullets && ammo != 0)
+        if (Input.GetButton("Fire1") && timer >= timeBetweenBullets && currentClipAmount != 0 && !reloading)
         {
             // ... shoot the gun.
             Shoot();
+        } else if(Input.GetButtonDown("Fire1") && currentClipAmount <= 0 && !reloading)
+        {
+            noAmmoSound.Stop();
+            noAmmoSound.loop = true;
+            noAmmoSound.Play();
+
+        } else if (Input.GetButtonUp("Fire1")) {
+            noAmmoSound.loop = false;
         }
 
         // If the timer has exceeded the proportion of timeBetweenBullets that the effects should be displayed for...
@@ -57,18 +98,27 @@ public class PlayerShooter : MonoBehaviour
         shotLine.enabled = false;
     }
 
+    public IEnumerator reloadWait()
+    {
+        reloading = true;
+        yield return new WaitForSeconds(reloadTime);
+        reloading = false;
+    }
+
     void Shoot()
     {
-        ammo -= 1;
+        currentClipAmount -= 1;
 
         // Reset the timer.
         timer = 0f;
 
-        //shotSound.Play();
 
         // Stop the particles from playing if they were, then start the particles.
         gunParticles.Stop();
         gunParticles.Play();
+
+        //shotSound.Stop();
+        shotSound.Play();
 
 
         // Enable the line renderer and set it's first position to be the end of the gun.
@@ -108,13 +158,22 @@ public class PlayerShooter : MonoBehaviour
         }
     }
 
-    public int getAmmo()
+    public int getCurrentClipAmount()
     {
-        return ammo;
+        return currentClipAmount;
+    }
+    public int getTotalAmmo()
+    {
+        return totalAmmo;
+    }
+
+    public bool getReloading()
+    {
+        return reloading;
     }
 
     public void resetAmmo()
     {
-        ammo = startAmmo;
+        totalAmmo = startAmmo;
     }
 }
