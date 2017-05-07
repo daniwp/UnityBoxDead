@@ -38,10 +38,10 @@ public class SwitchWeapon : MonoBehaviour {
 
         if (semiautogun.activeSelf)
         {
-            ammoText.text = "Ammo: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getTotalAmmo() + " Mag: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
+            ammoText.text = "Ammo: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getTotalAmmo() + "\n Mag: " + semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
         } else if(gun.activeSelf)
         {
-            ammoText.text = "Ammo: Infinite" + " Mag: " + gun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
+            ammoText.text = "Ammo: Infinite" + "\n Mag: " + gun.transform.GetChild(4).GetComponent<PlayerShooter>().getCurrentClipAmount();
         }
     }
 

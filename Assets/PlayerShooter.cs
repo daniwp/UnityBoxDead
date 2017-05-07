@@ -27,6 +27,7 @@ public class PlayerShooter : MonoBehaviour
     AudioSource[] sounds;
     AudioSource noAmmoSound;
     AudioSource shotSound;
+    AudioSource reloadSound;
     float totalSliderTime;
 
     void Awake()
@@ -41,6 +42,7 @@ public class PlayerShooter : MonoBehaviour
         sounds = GetComponents<AudioSource>();
         noAmmoSound = sounds[0];
         shotSound = sounds[1];
+        reloadSound = sounds[2];
         currentClipAmount = clipSize;
         startAmmo = totalAmmo;
         totalAmmo -= clipSize;
@@ -117,10 +119,12 @@ public class PlayerShooter : MonoBehaviour
 
     public IEnumerator reloadWait()
     {
+        reloadSound.Play();
         reloading = true;
         yield return new WaitForSeconds(reloadTime);
         reloading = false;
         reloadSlider.gameObject.SetActive(false);
+        reloadSound.Stop();
     }
 
     void Shoot()
