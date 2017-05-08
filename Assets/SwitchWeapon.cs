@@ -49,7 +49,11 @@ public class SwitchWeapon : MonoBehaviour {
     {
         if (other.tag == "SemiAuto")
         {
+            Debug.Log("HESHA");
             activeWeps.Add(semiautogun);
+            semiautogun.transform.GetChild(4).GetComponent<PlayerShooter>().resetAmmo();
+            semiautogun.SetActive(true);
+            gun.SetActive(false);
             Destroy(other.gameObject);
         }
     }

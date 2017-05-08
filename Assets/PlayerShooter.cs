@@ -53,6 +53,21 @@ public class PlayerShooter : MonoBehaviour
         // Add the time since Update was last called to the timer.
         timer += Time.deltaTime;
 
+        shootRay.origin = transform.position;
+        shotLine.SetPosition(0, transform.position);
+        shootRay.direction = transform.forward;
+
+        if (Physics.Raycast(shootRay, out shootHit, range, shootableMask))
+        {
+            // Set the second position of the line renderer to the point the raycast hit.
+            shotLine.SetPosition(1, shootHit.point);
+        } else if (Physics.Raycast(shootRay, out shootHit, range, obstacleMask)) {
+            shotLine.SetPosition(1, shootHit.point);
+        } else
+        {
+            shotLine.SetPosition(1, shootRay.GetPoint(100f));
+        }
+
         if (reloading)
         {
             reloadSlider.gameObject.SetActive(true);
@@ -92,17 +107,17 @@ public class PlayerShooter : MonoBehaviour
         }
 
         // If the timer has exceeded the proportion of timeBetweenBullets that the effects should be displayed for...
-        if (timer >= timeBetweenBullets * effectsDisplayTime)
-        {
+        //if (timer >= timeBetweenBullets * effectsDisplayTime)
+        //{
             // ... disable the effects.
-            DisableEffects();
-        }
+        //    DisableEffects();
+        //}
     }
 
     public void DisableEffects()
     {
         // Disable the line renderer and the light.
-        shotLine.enabled = false;
+        //shotLine.enabled = false;
     }
 
     IEnumerator AnimateSliderOverTime(float seconds)
@@ -196,6 +211,7 @@ public class PlayerShooter : MonoBehaviour
 
     public void resetAmmo()
     {
-        totalAmmo = startAmmo;
+        totalAmmo = startAmmo - clipSize;
+        currentClipAmount = clipSize;
     }
 }

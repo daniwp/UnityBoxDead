@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
     public int currentHealth;                                   // The current health the player has.
     public Slider healthSlider;                                 // Reference to the UI's health bar.
     public Image damageImage;                                   // Reference to an image to flash on the screen on being hurt.
-    //public AudioClip deathClip;                                 // The audio clip to play when the player dies.
+    //public AudioClip deathClip;                               // The audio clip to play when the player dies.
     public float flashSpeed = 5f;                               // The speed the damageImage will fade at.
     public Color flashColour = new Color(1f, 0f, 0f, 0.1f);     // The colour the damageImage is set to, to flash.
     public Text deathText;
@@ -16,8 +16,8 @@ public class PlayerHealth : MonoBehaviour
 
     Animator anim;                                              // Reference to the Animator component.
     AudioSource playerAudio;                                    // Reference to the AudioSource component.
-    Movement playerMovement;                              // Reference to the player's movement.
-    PlayerShooter playerShooting;                              // Reference to the PlayerShooting script.
+    Movement playerMovement;                                    // Reference to the player's movement.
+    PlayerShooter playerShooting;                               // Reference to the PlayerShooting script.
     bool isDead;                                                // Whether the player is dead.
     bool damaged;                                               // True when the player gets damaged.
 
@@ -105,12 +105,10 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth + health > startingHealth && currentHealth != 100)
         {
-            Debug.Log("OVER start");
             currentHealth = startingHealth;
             Destroy(obj);
         } else if (currentHealth < startingHealth )
         {
-            Debug.Log("UNDER start");
             currentHealth += health;
             healthSlider.value = currentHealth;
             Destroy(obj);

@@ -8,7 +8,7 @@ public class EnemyHealth : MonoBehaviour
         public int currentHealth;                   // The current health the enemy has.
         public float sinkSpeed = 2.5f;              // The speed at which the enemy sinks through the floor when dead.
         public int scoreValue = 10;                 // The amount added to the player's score when the enemy dies.
-
+        public GameObject[] drops;    
 
         ParticleSystem hitParticles;                // Reference to the particle system that plays when the enemy is damaged.
         CapsuleCollider capsuleCollider;            // Reference to the capsule collider.
@@ -66,6 +66,7 @@ public class EnemyHealth : MonoBehaviour
 
         void Death()
         {
+            DropRoll();
             // The enemy is dead.
             isDead = true;
             GetComponent<CapsuleCollider>().enabled = false;
@@ -93,6 +94,17 @@ public class EnemyHealth : MonoBehaviour
 
             // After 2 seconds destory the enemy.
             Destroy(gameObject, 2f);
+        }
+
+        void DropRoll()
+        {
+            if (Random.Range(0,100) <= 20)
+            {
+                Debug.Log("DROP!");
+                Vector3 spawnPos = transform.position;
+                spawnPos.y = 1.42f;
+                Instantiate(drops[Random.Range(0, 1)], spawnPos, transform.rotation);
+            }
         }
     }
 
